@@ -118,6 +118,10 @@ namespace Visca
 #endif
         }
 
+        public void Dispose()
+        {
+            _responseParseThread?.Abort();
+        }
 #if !SSHARP
         ~ViscaProtocolProcessor()
         {
