@@ -457,6 +457,7 @@ namespace Visca
 #else
                 throw new ArgumentException("Supplied data is not in visca packet format", nameof(data));
 #endif
+            if (data.Length > 1) // Ignore empty (1 byte == terminator) packet
             _responseQueue.Enqueue(new ViscaRxPacket(data));
         }
 
