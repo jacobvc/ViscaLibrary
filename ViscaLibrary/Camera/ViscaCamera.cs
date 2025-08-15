@@ -38,7 +38,7 @@ namespace Visca
 
         private readonly ViscaCameraId _id;
         private readonly ViscaCameraParameters _parameters;
-        private readonly ViscaProtocolProcessor _visca;
+        protected readonly ViscaProtocolProcessor _visca;
         private readonly List<ViscaInquiry> _pollCommands;
 
         /// <summary>
