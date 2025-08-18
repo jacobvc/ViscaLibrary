@@ -44,7 +44,7 @@ namespace Visca
     }
 #endif
 
-    public class ViscaProtocolProcessor
+    public class ViscaProtocolProcessor : IDisposable
     {
         private readonly Dictionary<ViscaCameraId, ViscaCamera> _cameras = new Dictionary<ViscaCameraId, ViscaCamera>(7);
 
@@ -79,6 +79,7 @@ namespace Visca
         /// Thread to process responses from camera
         /// </summary>
         private readonly Thread _responseParseThread;
+        private volatile bool _running = true;
 
         private readonly Action<byte, string, object[]> _logAction; 
 
@@ -120,15 +121,23 @@ namespace Visca
 
         public void Dispose()
         {
-            _responseParseThread?.Abort();
+            _running = false;
+            // Optionally signal the thread if it's waiting (e.g., via an event)
+            if (_responseParseThread != null && _responseParseThread.IsAlive)
+            {
+                _responseParseThread.Abort();
+                _responseParseThread.Join();
+            }
         }
-#if !SSHARP
-        ~ViscaProtocolProcessor()
+
+        // Example thread loop:
+        private void ResponseParseLoop()
         {
-            _responseQueue.CompleteAdding();
-            _responseQueueCancel.Cancel(false);
+            while (_running)
+            {
+                // Thread work here
+            }
         }
-#endif
 
         /// <summary>
         /// Commands in the sending queue
