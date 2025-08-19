@@ -35,9 +35,11 @@ namespace Visca
         }
 
         private readonly ViscaCameraId _id;
-        protected readonly ViscaCameraParameters _parameters;
-        protected readonly ViscaProtocolProcessor _visca;
-        protected readonly List<ViscaInquiry> _pollCommands;
+        private readonly ViscaProtocolProcessor _visca;
+        private readonly List<ViscaInquiry> _pollCommands;
+
+        public ViscaRangeDictionary limitsByPropertyName = new ViscaRangeDictionary();
+        public Dictionary<string, ViscaInquiry> InquiriesByPropertyName = new Dictionary<string, ViscaInquiry>();
 
         /// <summary>
         /// Poll timer controls how often poll camera
@@ -62,25 +64,11 @@ namespace Visca
                     Poll();
                 }, null, Timeout.Infinite, Timeout.Infinite);
 
-
-            _pollCommands.Add(_aeInquiry);
-            _pollCommands.Add(_apertureInquiry);
-            _pollCommands.Add(_backLightInquiry);
-            _pollCommands.Add(_bGainInquiry);
-            _pollCommands.Add(_expCompInquiry);
-            _pollCommands.Add(_gainInquiry);
-            _pollCommands.Add(_focusAutoInquiry);
-            _pollCommands.Add(_focusPositionInquiry);
-            _pollCommands.Add(_irisInquiry);
-            _pollCommands.Add(_muteInquiry);
-            _pollCommands.Add(_powerInquiry);
-            _pollCommands.Add(_ptzPositionInquiry);
-            _pollCommands.Add(_rGainInquiry);
-            _pollCommands.Add(_shutterInquiry);
-            _pollCommands.Add(_titleInquiry);
-            _pollCommands.Add(_wbInquiry);
-            _pollCommands.Add(_wideDynamicInquiry);
-            _pollCommands.Add(_zoomPositionInquiry);
+            foreach (ViscaInquiry inquiry in InquiriesByPropertyName.Values)
+            {
+                if (inquiry != null)
+                    _pollCommands.Add(inquiry);
+            }
         }
 
         #region Polling commands
@@ -118,8 +106,8 @@ namespace Visca
         {
             if (PollEnabled)
             {
-                foreach (var command in _pollCommands)
-                    _visca.EnqueueCommand(command);
+                foreach (ViscaInquiry inquiry in InquiriesByPropertyName.Values)
+                    _visca.EnqueueCommand(inquiry);
             }
         }
 
@@ -130,29 +118,16 @@ namespace Visca
             StringBuilder sb = new StringBuilder();
 
             sb.AppendFormat("{0}: {1}\r\n", GetType().Name, (byte)_id);
-            sb.AppendFormat("\tPower:\t\t{0}\r\n", Power ? "ON" : "OFF");
-            sb.AppendFormat("\tPan:\t\t{0}\r\n", PanPosition);
-            sb.AppendFormat("\tPan Speed:\t\t{0}\r\n", PanSpeed);
-            sb.AppendFormat("\tTilt:\t\t{0}\r\n", TiltPosition);
-            sb.AppendFormat("\tTilt Speed:\t\t{0}\r\n", TiltSpeed);
-            sb.AppendFormat("\tAE:\t\t{0}\r\n", AE);
-            sb.AppendFormat("\tAperture:\t\t{0}\r\n", Aperture);
-            sb.AppendFormat("\tBackLight:\t\t{0}\r\n", BackLight ? "ON" : "OFF");
-            sb.AppendFormat("\tExpComp:\t\t{0}\r\n", ExpComp);
-            sb.AppendFormat("\tFocusMode:\t\t{0}\r\n", FocusAuto ? "ON" : "OFF");
-            sb.AppendFormat("\tFocus:\t\t{0}\r\n", FocusPosition);
-            sb.AppendFormat("\tGain:\t\t{0}\r\n", Gain);
-            sb.AppendFormat("\tBGain:\t\t{0}\r\n", BGain);
-            sb.AppendFormat("\tRGain:\t\t{0}\r\n", RGain);
-            sb.AppendFormat("\tRGain: \t{0}\r\n", Iris);
-            sb.AppendFormat("\tMute:\t\t{0}\r\n", Mute ? "ON" : "OFF");
-            sb.AppendFormat("\tShutter:\t\t{0}\r\n", Shutter);
-            sb.AppendFormat("\tTitle:\t\t{0}\r\n", Title ? "ON" : "OFF");
-            sb.AppendFormat("\tWB:\t\t{0}\r\n", WB);
-            sb.AppendFormat("\tWideDynamic:\t\t{0}\r\n", WideDynamicMode);
-            sb.AppendFormat("\tZoom:\t\t{0}\r\n", ZoomPosition);
-            sb.AppendFormat("\tZoom Speed:\t\t{0}\r\n", ZoomSpeed);
-
+            foreach (string propertyName in InquiriesByPropertyName.Keys)
+            {
+                PropertyInfo pinfo = typeof(int).GetProperty(propertyName);
+                // Fix: GetValue requires an object instance as the first argument.
+                // Since typeof(int) is used, but int does not have properties, this code is likely incorrect.
+                // If you intend to get the value of a property from this instance, use:
+                PropertyInfo instanceProp = this.GetType().GetProperty(propertyName);
+                object value = instanceProp != null ? instanceProp.GetValue(this, null) : null;
+                sb.AppendFormat("\t{0}:\t\t{1}\r\n", propertyName, value);
+            }
             return sb.ToString();
         }
 

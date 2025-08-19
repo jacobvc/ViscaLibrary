@@ -12,8 +12,8 @@ namespace Visca
 {
     public partial class ViscaCamera
     {
-        Dictionary<string, ViscaInquiry> inquiries = new Dictionary<string, ViscaInquiry>();
-
+        // TODO replace _parameters with LimitsByPropertyName
+        private readonly ViscaCameraParameters _parameters;
         public ViscaCamera(ViscaCameraId id, ViscaCameraParameters parameters)
         {
 
@@ -26,7 +26,7 @@ namespace Visca
 
             _aeCmd = new ViscaAEMode((byte)id, AEMode.FullAuto);
             _aeInquiry = new ViscaAEInquiry((byte)id, new Action<AEMode>(mode => { updateAE(mode); }));
-            inquiries.Add("AE", _aeInquiry);
+            InquiriesByPropertyName.Add("AE", _aeInquiry);
 
             #endregion AE Commands Constructors
 
@@ -35,7 +35,7 @@ namespace Visca
             _apertureCmd = new ViscaAperture((byte)id, UpDownMode.Up);
             _apertureValueCmd = new ViscaApertureValue((byte)id, 0);
             _apertureInquiry = new ViscaApertureInquiry((byte)id, new Action<int>(position => { updateAperture(position); }));
-            inquiries.Add("Aperture", _apertureInquiry);
+            InquiriesByPropertyName.Add("Aperture", _apertureInquiry);
 
             #endregion Aperture Commands Constructors
 
@@ -43,7 +43,7 @@ namespace Visca
 
             _backLightCmd = new ViscaBackLight((byte)id, OnOffMode.On);
             _backLightInquiry = new ViscaBackLightInquiry((byte)id, new Action<OnOffMode>(mode => { updateBackLight(mode); }));
-            inquiries.Add("BackLight", _backLightInquiry);
+            InquiriesByPropertyName.Add("BackLight", _backLightInquiry);
 
             #endregion BackLight Commands Constructors
 
@@ -52,7 +52,7 @@ namespace Visca
             _bGainCmd = new ViscaBGain((byte)id, UpDownMode.Up);
             _bGainValueCmd = new ViscaBGainValue((byte)id, 0);
             _bGainInquiry = new ViscaBGainInquiry((byte)id, new Action<int>(position => { updateBGain(position); }));
-            inquiries.Add("BGain", _bGainInquiry);
+            InquiriesByPropertyName.Add("BGain", _bGainInquiry);
 
             #endregion Gain Commands Constructors
 
@@ -61,7 +61,7 @@ namespace Visca
             _expCompCmd = new ViscaExpComp((byte)id, UpDownMode.Up);
             _expCompValueCmd = new ViscaExpCompValue((byte)id, 0);
             _expCompInquiry = new ViscaExpCompInquiry((byte)id, new Action<int>(position => { updateExpComp(position); }));
-            inquiries.Add("ExpComp", _expCompInquiry);
+            InquiriesByPropertyName.Add("ExpComp", _expCompInquiry);
 
             #endregion ExpComp Commands Constructors
 
@@ -81,11 +81,11 @@ namespace Visca
             _focusAutoCmd = new ViscaFocusAuto((byte)id, OnOffMode.On);
             _focusAutoToggleCmd = new ViscaFocusAutoToggle((byte)id);
             _focusAutoInquiry = new ViscaFocusAutoInquiry((byte)id, new Action<OnOffMode>(mode => { updateFocusAuto(mode); }));
-            inquiries.Add("FocusAuto", _focusAutoInquiry);
+            InquiriesByPropertyName.Add("FocusAuto", _focusAutoInquiry);
 
             _focusPositionCmd = new ViscaFocusPosition((byte)id, 0);
             _focusPositionInquiry = new ViscaFocusPositionInquiry((byte)id, new Action<int>(position => { updateFocusPosition(position); }));
-            inquiries.Add("FocusPosition", _focusPositionInquiry);
+            InquiriesByPropertyName.Add("FocusPosition", _focusPositionInquiry);
 
             #endregion Focus Commands Constructors
 
@@ -94,7 +94,7 @@ namespace Visca
             _gainCmd = new ViscaGain((byte)id, UpDownMode.Up);
             _gainValueCmd = new ViscaGainValue((byte)id, 0);
             _gainInquiry = new ViscaGainInquiry((byte)id, new Action<int>(position => { updateGain(position); }));
-            inquiries.Add("Gain", _gainInquiry);
+            InquiriesByPropertyName.Add("Gain", _gainInquiry);
 
             #endregion Gain Commands Constructors
 
@@ -103,7 +103,7 @@ namespace Visca
             _irisCmd = new ViscaIris((byte)id, UpDownMode.Up);
             _irisValueCmd = new ViscaIrisValue((byte)id, 0);
             _irisInquiry = new ViscaIrisInquiry((byte)id, new Action<int>(position => { updateIris(position); }));
-            inquiries.Add("Iris", _irisInquiry);
+            InquiriesByPropertyName.Add("Iris", _irisInquiry);
 
             #endregion Gain Commands Constructors
 
@@ -111,7 +111,7 @@ namespace Visca
 
             _muteCmd = new ViscaMute((byte)id, OnOffMode.On);
             _muteInquiry = new ViscaMuteInquiry((byte)id, new Action<OnOffMode>(mode => { updateMute(mode); }));
-            inquiries.Add("Mute", _muteInquiry);
+            InquiriesByPropertyName.Add("Mute", _muteInquiry);
 
             #endregion Mute Commands Constructors
 
@@ -119,7 +119,7 @@ namespace Visca
 
             _powerCmd = new ViscaPower((byte)id, OnOffMode.On);
             _powerInquiry = new ViscaPowerInquiry((byte)id, new Action<OnOffMode>(mode => { updatePower(mode); }));
-            inquiries.Add("Power", _powerInquiry);
+            InquiriesByPropertyName.Add("Power", _powerInquiry);
 
             #endregion Power Commands Constructors
 
@@ -140,7 +140,7 @@ namespace Visca
             _ptzAbsolute = new ViscaPTZPosition((byte)id, false, _ptzPanSpeed, _ptzTiltSpeed, 0, 0);
             _ptzRelative = new ViscaPTZPosition((byte)id, true, _ptzPanSpeed, _ptzTiltSpeed, 0, 0);
             _ptzPositionInquiry = new ViscaPTZPositionInquiry((byte)id, new Action<int, int>((panPosition, tiltPosition) => { updatePTZPosition(panPosition, tiltPosition); }));
-            inquiries.Add("PTZPosition", _ptzPositionInquiry);
+            InquiriesByPropertyName.Add("PTZPosition", _ptzPositionInquiry);
 
             #endregion PTZ Commands Constructors
 
@@ -149,7 +149,7 @@ namespace Visca
             _rGainCmd = new ViscaRGain((byte)id, UpDownMode.Up);
             _rGainValueCmd = new ViscaRGainValue((byte)id, 0);
             _rGainInquiry = new ViscaRGainInquiry((byte)id, new Action<int>(position => { updateRGain(position); }));
-            inquiries.Add("RGain", _rGainInquiry);
+            InquiriesByPropertyName.Add("RGain", _rGainInquiry);
 
             #endregion RGain Commands Constructors
 
@@ -158,7 +158,7 @@ namespace Visca
             _shutterCmd = new ViscaShutter((byte)id, UpDownMode.Up);
             _shutterValueCmd = new ViscaShutterValue((byte)id, 0);
             _shutterInquiry = new ViscaShutterInquiry((byte)id, new Action<int>(position => { updateShutter(position); }));
-            inquiries.Add("Shutter", _shutterInquiry);
+            InquiriesByPropertyName.Add("Shutter", _shutterInquiry);
 
             #endregion Gain Commands Constructors
 
@@ -166,7 +166,7 @@ namespace Visca
 
             _titleCmd = new ViscaTitle((byte)id, OnOffMode.On);
             _titleInquiry = new ViscaTitleInquiry((byte)id, new Action<OnOffMode>(mode => { updateTitle(mode); }));
-            inquiries.Add("Title", _titleInquiry);
+            InquiriesByPropertyName.Add("Title", _titleInquiry);
 
             #endregion Power Commands Constructors
 
@@ -174,7 +174,7 @@ namespace Visca
 
             _wbCmd = new ViscaWBMode((byte)id, WBMode.Auto);
             _wbInquiry = new ViscaWBInquiry((byte)id, new Action<WBMode>(mode => { updateWB(mode); }));
-            inquiries.Add("WB", _wbInquiry);
+            InquiriesByPropertyName.Add("WB", _wbInquiry);
 
             #endregion WB Commands Constructors
 
@@ -182,7 +182,7 @@ namespace Visca
 
             _wideDynamicCmd = new ViscaWideDynamicMode((byte)id, OnOffMode.On);
             _wideDynamicInquiry = new ViscaWideDynamicInquiry((byte)id, new Action<OnOffMode>(mode => { updateWideDynamicMode(mode); }));
-            inquiries.Add("WideDynamic", _wideDynamicInquiry);
+            InquiriesByPropertyName.Add("WideDynamic", _wideDynamicInquiry);
 
             #endregion WideDynamic Commands Constructors
 
@@ -196,7 +196,7 @@ namespace Visca
             _zoomWideWithSpeedCmd = new ViscaZoomWideWithSpeed((byte)id, _zoomSpeed);
             _zoomPositionCmd = new ViscaZoomPosition((byte)id, 0);
             _zoomPositionInquiry = new ViscaZoomPositionInquiry((byte)id, new Action<int>(position => { updateZoomPosition(position); }));
-            inquiries.Add("ZoomPosition", _zoomPositionInquiry);
+            InquiriesByPropertyName.Add("ZoomPosition", _zoomPositionInquiry);
 
             #endregion Zoom Commands Constructors
         }

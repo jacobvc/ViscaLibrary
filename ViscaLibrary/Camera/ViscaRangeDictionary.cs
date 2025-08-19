@@ -45,7 +45,12 @@ namespace Visca
         }
         public Limits get(string name)
         {
-            if (dict.TryGetValue(name, out var value))
+            Limits value;
+            if (dict.TryGetValue(name, out value))
+            {
+                return value;
+            }
+            else if (dict.TryGetValue(name + "Limits", out value))
             {
                 return value;
             }
