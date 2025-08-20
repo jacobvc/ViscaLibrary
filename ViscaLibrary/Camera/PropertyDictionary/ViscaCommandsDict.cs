@@ -49,9 +49,6 @@ namespace Visca
             // Add all of the builtin Visca Limits to the dictionary
             limitsByPropertyName.Add(typeof(ViscaDefaults));
 
-            // TODO replace _parameters with LimitsByPropertyName below and remove _parameters from all commands constructors
-            ViscaCameraParameters _parameters = new ViscaCameraDefaultParameters();
-
 
             #region AE Commands Constructors
 
@@ -101,7 +98,7 @@ namespace Visca
             _focusStopCmd = new ViscaFocusStop((byte)id);
             _focusFarCmd = new ViscaFocusFar((byte)id);
             _focusNearCmd = new ViscaFocusNear((byte)id);
-            _focusSpeed = new ViscaFocusSpeed(_parameters.FocusSpeedLimits);
+            _focusSpeed = new ViscaFocusSpeed(limitsByPropertyName.getByte("FocusSpeed"));
             _focusFarWithSpeedCmd = new ViscaFocusFarWithSpeed((byte)id, _focusSpeed);
             _focusNearWithSpeedCmd = new ViscaFocusNearWithSpeed((byte)id, _focusSpeed);
             _focusTriggerCmd = new ViscaFocusTrigger((byte)id);
@@ -157,8 +154,8 @@ namespace Visca
             #region PTZ Commands Constructors
 
             _ptzHome = new ViscaPTZHome((byte)id);
-            _ptzPanSpeed = new ViscaPanSpeed(_parameters.PanSpeedLimits);
-            _ptzTiltSpeed = new ViscaTiltSpeed(_parameters.TiltSpeedLimits);
+            _ptzPanSpeed = new ViscaPanSpeed(limitsByPropertyName.getByte("PanSpeed"));
+            _ptzTiltSpeed = new ViscaTiltSpeed(limitsByPropertyName.getByte("TiltSpeed"));
             _ptzStop = new ViscaPTZStop((byte)id, _ptzPanSpeed, _ptzTiltSpeed);
             _ptzUp = new ViscaPTZUp((byte)id, _ptzPanSpeed, _ptzTiltSpeed);
             _ptzDown = new ViscaPTZDown((byte)id, _ptzPanSpeed, _ptzTiltSpeed);
@@ -222,7 +219,7 @@ namespace Visca
             _zoomStopCmd = new ViscaZoomStop((byte)id);
             _zoomTeleCmd = new ViscaZoomTele((byte)id);
             _zoomWideCmd = new ViscaZoomWide((byte)id);
-            _zoomSpeed = new ViscaZoomSpeed(_parameters.ZoomSpeedLimits);
+            _zoomSpeed = new ViscaZoomSpeed(limitsByPropertyName.getByte("ZoomSpeed"));
             _zoomTeleWithSpeedCmd = new ViscaZoomTeleWithSpeed((byte)id, _zoomSpeed);
             _zoomWideWithSpeedCmd = new ViscaZoomWideWithSpeed((byte)id, _zoomSpeed);
             _zoomPositionCmd = new ViscaZoomPosition((byte)id, 0);

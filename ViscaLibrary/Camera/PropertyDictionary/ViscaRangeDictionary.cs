@@ -134,8 +134,8 @@ namespace Visca
             try
             {
                 var value = get(propertyName);
-                if (byte.MaxValue > value.High || byte.MaxValue < value.Low
-                   || byte.MinValue > value.High || byte.MinValue < value.Low)
+                if (byte.MaxValue < value.High || byte.MaxValue < value.Low
+                   || byte.MinValue > value.High || byte.MinValue > value.Low)
                 {
                     throw new Exception($"Limit '{propertyName}' values not valid for 'byte' range limits.");
                 }
