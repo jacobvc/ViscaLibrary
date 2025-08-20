@@ -12,15 +12,46 @@ namespace Visca
 {
     public partial class ViscaCamera
     {
-        // TODO replace _parameters with LimitsByPropertyName
-        private readonly ViscaCameraParameters _parameters;
-        public ViscaCamera(ViscaCameraId id, ViscaCameraParameters parameters)
+         /* 
+         * Implement args required for library commands
+         */
+        public class GenericEventArgs<T> : EventArgs
         {
+            public T EventData { get; private set; }
 
-            if (parameters == null)
-                _parameters = new ViscaCameraDefaultParameters();
-            else
-                _parameters = parameters;
+            public GenericEventArgs(T EventData)
+            {
+                this.EventData = EventData;
+            }
+        }
+        public class OnOffEventArgs : EventArgs
+        {
+            private readonly bool _value;
+            public bool On { get { return _value; } }
+            public bool Off { get { return !_value; } }
+            public OnOffEventArgs(bool value) : base() { _value = value; }
+        }
+        public class PositionEventArgs : EventArgs
+        {
+            public int Position;
+            public PositionEventArgs(int position) : base() { this.Position = position; }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ViscaCamera"/> class with the specified camera ID and parameters.
+        /// Sets up all VISCA command and inquiry objects for camera control, using either the provided parameters or default parameters if null.
+        /// Each command and inquiry is associated with a property name in <see cref="InquiriesByPropertyName"/>.
+        /// </summary>
+        /// <param name="id">The camera ID.</param>
+        /// <param name="parameters">The camera parameters. If null, default parameters are used.</param>
+        public ViscaCamera(ViscaCameraId id)
+        {
+            // Add all of the builtin Visca Limits to the dictionary
+            limitsByPropertyName.Add(typeof(ViscaDefaults));
+
+            // TODO replace _parameters with LimitsByPropertyName below and remove _parameters from all commands constructors
+            ViscaCameraParameters _parameters = new ViscaCameraDefaultParameters();
+
 
             #region AE Commands Constructors
 

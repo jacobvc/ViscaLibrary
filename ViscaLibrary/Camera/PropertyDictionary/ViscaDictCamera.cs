@@ -12,31 +12,8 @@ namespace Visca
 {
     public partial class ViscaCamera
     {
-        public class GenericEventArgs<T> : EventArgs
-        {
-            public T EventData { get; private set; }
-
-            public GenericEventArgs(T EventData)
-            {
-                this.EventData = EventData;
-            }
-        }
-        public class OnOffEventArgs : EventArgs
-        {
-            private readonly bool _value;
-            public bool On { get { return _value; } }
-            public bool Off { get { return !_value; } }
-            public OnOffEventArgs(bool value) : base() { _value = value; }
-        }
-        public class PositionEventArgs : EventArgs
-        {
-            public int Position;
-            public PositionEventArgs(int position) : base() { this.Position = position; }
-        }
-
-        private readonly ViscaCameraId _id;
+        private readonly byte _id;
         private readonly ViscaProtocolProcessor _visca;
-        private readonly List<ViscaInquiry> _pollCommands;
 
         public ViscaRangeDictionary limitsByPropertyName = new ViscaRangeDictionary();
         public Dictionary<string, ViscaInquiry> InquiriesByPropertyName = new Dictionary<string, ViscaInquiry>();
@@ -49,12 +26,14 @@ namespace Visca
 #else
         private readonly Timer _pollTimer;
 #endif
-        public ViscaCamera(ViscaCameraId id, ViscaCameraParameters parameters, ViscaProtocolProcessor visca)
-            : this(id, parameters)
+        public ViscaCamera(ViscaCameraId id, ViscaProtocolProcessor visca)
+            : this(id)
         {
-            _id = id;
+            _id = (byte)id;
             _visca = visca;
-            _pollCommands = new List<ViscaInquiry>();
+
+            // Default poll is everything in InquiriesByPropertyName
+            _pollList = new Dictionary<string, ViscaInquiry>(InquiriesByPropertyName); 
 #if SSHARP
             _pollTimer = new CTimer((o) => 
 #else
@@ -64,14 +43,10 @@ namespace Visca
                     Poll();
                 }, null, Timeout.Infinite, Timeout.Infinite);
 
-            foreach (ViscaInquiry inquiry in InquiriesByPropertyName.Values)
-            {
-                if (inquiry != null)
-                    _pollCommands.Add(inquiry);
-            }
         }
 
-        #region Polling commands
+        #region Polling interface
+        private Dictionary<string, ViscaInquiry> _pollList = new Dictionary<string, ViscaInquiry>();
 
         /// <summary>
         /// Enable or Disable Poll option
@@ -99,6 +74,7 @@ namespace Visca
             }
         }
 
+
         /// <summary>
         /// Manual Poll, have effect only if Polling Enabled
         /// </summary>
@@ -106,8 +82,24 @@ namespace Visca
         {
             if (PollEnabled)
             {
-                foreach (ViscaInquiry inquiry in InquiriesByPropertyName.Values)
+                foreach (ViscaInquiry inquiry in _pollList.Values)
                     _visca.EnqueueCommand(inquiry);
+            }
+        }
+
+        public void PollListNew()
+        {
+            _pollList.Clear();
+        }
+        public void PollListAdd(string propertyName)
+        {
+            _pollList[propertyName] = InquiriesByPropertyName[propertyName];
+        }
+        public void PollListAddRange(string[] propertyNames)
+        {
+            foreach (var propertyName in propertyNames)
+            {
+                PollListAdd(propertyName);
             }
         }
 
@@ -117,13 +109,9 @@ namespace Visca
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendFormat("{0}: {1}\r\n", GetType().Name, (byte)_id);
-            foreach (string propertyName in InquiriesByPropertyName.Keys)
+            sb.AppendFormat("{0}: {1}\r\n", GetType().Name, _id);
+            foreach (string propertyName in _pollList.Keys)
             {
-                PropertyInfo pinfo = typeof(int).GetProperty(propertyName);
-                // Fix: GetValue requires an object instance as the first argument.
-                // Since typeof(int) is used, but int does not have properties, this code is likely incorrect.
-                // If you intend to get the value of a property from this instance, use:
                 PropertyInfo instanceProp = this.GetType().GetProperty(propertyName);
                 object value = instanceProp != null ? instanceProp.GetValue(this, null) : null;
                 sb.AppendFormat("\t{0}:\t\t{1}\r\n", propertyName, value);

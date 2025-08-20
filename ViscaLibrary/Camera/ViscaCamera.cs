@@ -39,7 +39,7 @@ namespace Visca
         private readonly ViscaCameraId _id;
         private readonly ViscaCameraParameters _parameters;
         protected readonly ViscaProtocolProcessor _visca;
-        protected readonly List<ViscaInquiry> _pollCommands;
+        private readonly List<ViscaInquiry> _pollCommands;
 
         /// <summary>
         /// Poll timer controls how often poll camera
@@ -305,7 +305,7 @@ namespace Visca
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendFormat("{0}: {1}\r\n", GetType().Name, (byte)_id);
+            sb.AppendFormat("ViscaCamera: {0}\r\n", (byte)_id);
             sb.AppendFormat("\tPower:\t\t{0}\r\n", Power ? "ON" : "OFF");
             sb.AppendFormat("\tPan:\t\t{0}\r\n", PanPosition);
             sb.AppendFormat("\tPan Speed:\t\t{0}\r\n", PanSpeed);
@@ -330,24 +330,6 @@ namespace Visca
             sb.AppendFormat("\tZoom Speed:\t\t{0}\r\n", ZoomSpeed);
 
             return sb.ToString();
-        }
-
-        /// <summary>
-        /// Connects the camera. Override in derived classes for specific connection logic.
-        /// </summary>
-        public virtual void Connect()
-        {
-            // Default implementation does nothing.
-            // Derived classes should override for actual connection logic.
-        }
-
-        /// <summary>
-        /// Disposes the camera resources. Override in derived classes for cleanup.
-        /// </summary>
-        public virtual void Dispose()
-        {
-            // Default implementation does nothing.
-            // Derived classes should override for actual cleanup logic.
         }
     }
 }

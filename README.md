@@ -1,3 +1,10 @@
+# Notes from jacobvc
+I have added a subdirectory, camera/PropertyDictionary that contans an implementation
+of mapping commands and limits by "Property Name", designed to support full operations 
+by simply specifiying property names. No effort as been made to get the two concepts
+to coexist, so it is handled by excluding ViscaCamera.cs from the build. The original 
+version can be restored by adding that file back and excluding the ones in PropertyDictionary
+
 # ViscaLibrary
 Implementation of VISCA serial protocol in C# as .NET Library
 
