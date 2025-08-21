@@ -167,7 +167,7 @@ namespace Visca
             }
             else
             {
-                // If command is ViscaDynamicCommand, clone it to get static version for enquing
+                // If command is ViscaDynamicCommand, clone it to Get static version for enquing
                 if (command is ViscaDynamicCommand)
                     command = (command as ViscaDynamicCommand).Clone();
                 _sendQueue.Enqueue(command);

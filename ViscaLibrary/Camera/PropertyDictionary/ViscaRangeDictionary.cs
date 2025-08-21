@@ -77,7 +77,7 @@ namespace Visca
         {
             get
             {
-                return get(propertyName);
+                return Get(propertyName);
             }
         }
 
@@ -87,7 +87,7 @@ namespace Visca
         /// <param name="propertyName">The property name.</param>
         /// <returns>The <see cref="Limits"/> object.</returns>
         /// <exception cref="KeyNotFoundException">Thrown if the limit is not found.</exception>
-        public Limits get(string propertyName)
+        public Limits Get(string propertyName)
         {
             Limits value;
             if (dict.TryGetValue(propertyName, out value))
@@ -110,11 +110,11 @@ namespace Visca
         /// <param name="propertyName">The property name.</param>
         /// <returns>The range limits as <see cref="IViscaRangeLimits{int}"/>.</returns>
         /// <exception cref="Exception">Thrown if the values are not valid for int range limits.</exception>
-        public IViscaRangeLimits<int> getInt(string propertyName)
+        public IViscaRangeLimits<int> GetInt(string propertyName)
         {
             try
             {
-                var value = get(propertyName);
+                var value = Get(propertyName);
                 return new ViscaRangeLimits<int>(value.Low, value.High, value.Message);
             }
             catch (Exception)
@@ -133,7 +133,7 @@ namespace Visca
         {
             try
             {
-                var value = get(propertyName);
+                var value = Get(propertyName);
                 if (byte.MaxValue < value.High || byte.MaxValue < value.Low
                    || byte.MinValue > value.High || byte.MinValue > value.Low)
                 {
