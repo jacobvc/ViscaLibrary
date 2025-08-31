@@ -109,7 +109,7 @@ namespace Visca
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendFormat("{0}: {1}\r\n", GetType().Name, _id);
+            sb.AppendFormat("{0}: id = {1}\r\n", GetType().Name, _id);
             foreach (string propertyName in _pollList.Keys)
             {
                 PropertyInfo instanceProp = this.GetType().GetProperty(propertyName);
