@@ -126,7 +126,7 @@ namespace Visca
             if (_responseParseThread != null && _responseParseThread.IsAlive)
             {
                 _responseParseThread.Abort();
-                _responseParseThread.Join();
+                //_responseParseThread.Join();
             }
         }
 
